@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace Memberships.Entities
         public string Description { get; set; }
 
         [MaxLength(20)]
+        [DisplayName("Rgistration Code")]
         public string RgistrationCode { get; set; }
     }
 }
