@@ -33,6 +33,22 @@ namespace Memberships.Areas.Admin.Extensions
                     ImageUrl = p.ImageUrl
                 };
         }
+        public static async Task<IEnumerable<ProductItemModel>> Convert(this IQueryable<ProductItem> productItems,
+            ApplicationDbContext db)
+        {
+            if (productItems.Count().Equals(0)) return new List<ProductItemModel>();
+
+
+
+            return await (from p in productItems
+                select new ProductItemModel
+                {
+                    ItemId = p.ItemId,
+                    ProductId = p.ProductId,
+                    ItemTitle = db.Items.FirstOrDefault(i => i.Id.Equals(p.ItemId)).Title,
+                    ProductTitle = db.Products.FirstOrDefault(i => i.Id.Equals(p.ProductId)).Title
+                }).ToListAsync();
+        }
         public static async Task<ProductModel> Convert(this Product product,
             ApplicationDbContext db)
         {
