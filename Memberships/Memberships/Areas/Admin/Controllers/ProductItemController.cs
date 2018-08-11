@@ -68,18 +68,19 @@ namespace Memberships.Areas.Admin.Controllers
         }
 
         // GET: Admin/ProductItem/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public async Task<ActionResult> Edit(int? itemId,int? productId)
         {
-            if (id == null)
+            if (itemId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ProductItem productItem = await db.ProductItems.FindAsync(id);
+            ProductItem productItem = await GetProductItem(itemId, productId);
             if (productItem == null)
             {
                 return HttpNotFound();
             }
-            return View(productItem);
+            var model = await productItem.Convert(db);
+            return View(model);
         }
 
         // POST: Admin/ProductItem/Edit/5
@@ -87,7 +88,7 @@ namespace Memberships.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ProductId,ItemId")] ProductItem productItem)
+        public async Task<ActionResult> Edit([Bind(Include = "ProductId,ItemId,OldProductId,OldItemId")] ProductItem productItem)
         {
             if (ModelState.IsValid)
             {
@@ -122,6 +123,26 @@ namespace Memberships.Areas.Admin.Controllers
             db.ProductItems.Remove(productItem);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+
+        private async Task<ProductItem> GetProductItem(int? itemId, int? productId)
+        {
+            try
+            {
+                int itmId = 0, prdId = 0;
+                int.TryParse(itemId.ToString(), out itmId);
+                int.TryParse(productId.ToString(), out prdId);
+
+                var productItem =
+                    await db.ProductItems.FirstOrDefaultAsync(pi =>
+                        pi.ItemId.Equals(itmId) && pi.ProductId.Equals(prdId));
+                return productItem;
+
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         protected override void Dispose(bool disposing)

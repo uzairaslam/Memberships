@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web;
 using Memberships.Areas.Admin.Models;
 using Memberships.Entities;
@@ -70,6 +71,65 @@ namespace Memberships.Areas.Admin.Extensions
             model.ProductLinkTexts.Add(text);
             model.ProductTypes.Add(type);
             return model;
+        }
+        public static async Task<ProductItemModel> Convert(this ProductItem product,
+            ApplicationDbContext db)
+        {
+
+            var model = new ProductItemModel()
+                {
+                    ItemId = product.ItemId,
+                    ProductId = product.ProductId,
+                    Items = await db.Items.ToListAsync(),
+                    Products = await db.Products.ToListAsync()
+                };
+
+            return model;
+        }
+
+        public static async Task<bool> CanChange(this ProductItem prd, ApplicationDbContext db)
+        {
+            var oldProduct =await db.ProductItems.CountAsync(pi =>
+                pi.ItemId.Equals(prd.OldItemId) && pi.ProductId.Equals(prd.OldProductId));
+            
+            var newProduct =await db.ProductItems.CountAsync(pi =>
+                pi.ItemId.Equals(prd.ItemId) && pi.ProductId.Equals(prd.ProductId));
+            
+            return oldProduct.Equals(1) && newProduct.Equals(0);
+        }
+
+        public static async Task Change(this ProductItem prd, ApplicationDbContext db)
+        {
+            var oldProduct = await db.ProductItems.FirstOrDefaultAsync(pi =>
+                pi.ItemId.Equals(prd.OldItemId) && pi.ProductId.Equals(prd.OldProductId));
+
+            var newProduct = await db.ProductItems.FirstOrDefaultAsync(pi =>
+                pi.ItemId.Equals(prd.ItemId) && pi.ProductId.Equals(prd.ProductId));
+
+            if (newProduct == null && oldProduct != null)
+            {
+                newProduct = new ProductItem
+                {
+                    ProductId = prd.ProductId,
+                    ItemId = prd.ItemId
+                };
+
+                using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    try
+                    {
+                        db.ProductItems.Remove(oldProduct);
+                        db.ProductItems.Add(newProduct);
+
+                        await db.SaveChangesAsync();
+                        transaction.Complete();
+                    }
+                    catch
+                    {
+                        transaction.Dispose();
+                    }
+                }
+            }
         }
     }
 }
