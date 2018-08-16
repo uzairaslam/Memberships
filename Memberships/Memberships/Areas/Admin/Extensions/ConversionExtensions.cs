@@ -73,15 +73,17 @@ namespace Memberships.Areas.Admin.Extensions
             return model;
         }
         public static async Task<ProductItemModel> Convert(this ProductItem product,
-            ApplicationDbContext db)
+            ApplicationDbContext db, bool addListData = true)
         {
 
             var model = new ProductItemModel()
                 {
                     ItemId = product.ItemId,
                     ProductId = product.ProductId,
-                    Items = await db.Items.ToListAsync(),
-                    Products = await db.Products.ToListAsync()
+                    Items = addListData ? await db.Items.ToListAsync() : null,
+                    Products = addListData ? await db.Products.ToListAsync() : null,
+                    ItemTitle = (await db.Items.FirstOrDefaultAsync(i => i.Id.Equals(product.ItemId))).Title,
+                    ProductTitle = (await db.Products.FirstOrDefaultAsync(i => i.Id.Equals(product.ProductId))).Title
                 };
 
             return model;
