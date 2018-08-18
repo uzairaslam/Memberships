@@ -170,6 +170,7 @@
     <Compile Include="Areas\Admin\Controllers\SectionController.cs" />
     <Compile Include="Areas\Admin\Controllers\SubscriptionController.cs" />
     <Compile Include="Areas\Admin\Extensions\ConversionExtensions.cs" />
+    <Compile Include="Areas\Admin\Models\EditButtonModel.cs" />
     <Compile Include="Areas\Admin\Models\ProductItemModel.cs" />
     <Compile Include="Areas\Admin\Models\ProductModel.cs" />
     <Compile Include="Areas\Admin\Models\SmallButtonModel.cs" />
@@ -272,6 +273,7 @@
     <Content Include="Areas\Admin\Views\ProductItem\Details.cshtml" />
     <Content Include="Areas\Admin\Views\ProductItem\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\ProductItem\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_EditButtonDetailsPartial.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
