@@ -31,7 +31,7 @@ namespace Memberships.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SubscriptionProduct subscriptionProduct = await db.SubscriptionProducts.FindAsync(id);
+            SubscriptionProduct subscriptionProduct = await GetSubscriptionProduct(subscriptionId, productId);
             if (subscriptionProduct == null)
             {
                 return HttpNotFound();
