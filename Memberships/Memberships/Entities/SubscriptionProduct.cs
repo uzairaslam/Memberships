@@ -16,7 +16,7 @@ namespace Memberships.Entities
 
         [Required]
         [Key, Column(Order = 2)]
-        public int SubscritionId { get; set; }
+        public int SubscriptionId { get; set; }
 
         [NotMapped]
         public int OldProductId { get; set; }
