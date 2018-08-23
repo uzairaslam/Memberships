@@ -16,6 +16,7 @@ namespace Memberships.Areas.Admin.Models
         public int? ItemId { get; set; }
         public int? ProductId { get; set; }
         public int? SubscriptionId { get; set; }
+        public string UserId { get; set; }
 
         public string ActionParamaters
         {
@@ -30,6 +31,8 @@ namespace Memberships.Areas.Admin.Models
                     param.Append(String.Format("{0}={1}&", "ProductId", ProductId));
                 if (SubscriptionId != null && SubscriptionId > 0)
                     param.Append(String.Format("{0}={1}&", "SubscriptionId", SubscriptionId));
+                if (string.IsNullOrWhiteSpace(UserId))
+                    param.Append(String.Format("{0}={1}&", "UserId", UserId));
                 return param.ToString().Substring(0, param.Length - 1);
             }
         }
