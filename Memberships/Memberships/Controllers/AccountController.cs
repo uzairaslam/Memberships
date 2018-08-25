@@ -563,5 +563,46 @@ namespace Memberships.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(UserViewModel model)
+        {
+            try
+            {
+                if (model == null || string.IsNullOrWhiteSpace(model.Id))
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
+                if (ModelState.IsValid)
+                {
+                    ApplicationUser user = await UserManager.FindByIdAsync(model.Id);
+                    if (user != null)
+                    {
+                        user.FirstName = model.FirstName;
+                        user.UserName = model.Email;
+                        user.Email = model.Email;
+                        if (!user.PasswordHash.Equals(model.Password))
+                        {
+                            user.PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password);
+                        }
+
+                        var result = await UserManager.UpdateAsync(user);
+                        if (result.Succeeded)
+                        {
+                            return RedirectToAction("Index");
+                        }
+
+                        AddErrors(result);
+                    }
+                }
+            }
+            catch { }
+
+            return View(model);
+        }
+
+
     }
 }
