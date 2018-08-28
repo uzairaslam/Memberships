@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -661,5 +662,67 @@ namespace Memberships.Controllers
 
             return View(model);
         }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> Subscriptions(string userId)
+        {
+            if (userId == null || string.IsNullOrWhiteSpace(userId))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var model = new UserSubscriptionViewModel();
+            var db = new ApplicationDbContext();
+            model.UserSubscriptions = await
+                (from us in db.UserSubscriptions
+                    join s in db.Subscriptions
+                        on us.SubscritionId equals s.Id
+                    where us.UserId.Equals(userId)
+                    select new UserSubscriptionModel
+                    {
+                        Id = us.SubscritionId,
+                        StartDate = us.StartDate,
+                        EndDate = us.EndDate,
+                        Description = s.Description,
+                        RegistrationCode = s.RgistrationCode,
+                        Title = s.Title
+                    }).ToListAsync();
+            var ids = model.UserSubscriptions.Select(us => us.Id);
+            model.Subscriptions = await db.Subscriptions.Where(s => !ids.Contains(s.Id)).ToListAsync();
+            model.DisableDropDown = model.Subscriptions.Count.Equals(0);
+            model.UserId = userId;
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Subscriptions(UserSubscriptionViewModel model)
+        {
+            try
+            {
+                if (model == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var db = new ApplicationDbContext();
+                    db.UserSubscriptions.Add(new UserSubscription
+                    {
+                        UserId = model.UserId,
+                        SubscritionId = model.SubscriptionId,
+                        StartDate = DateTime.Now,
+                        EndDate = DateTime.MaxValue
+                    });
+                    db.SaveChangesAsync();
+                }
+            }
+            catch { }
+
+            return RedirectToAction("Subscriptions", "Account", new {userId = model.UserId});
+        }
+
     }
 }
