@@ -30,6 +30,9 @@ namespace Memberships
             bundles.Add(new ScriptBundle("~/bundles/Admin").Include(
                 "~/Scripts/AdminMenu.js"));
 
+            bundles.Add(new StyleBundle("~/Content/membership").Include(
+                "~/Content/navbar.css"));
+
         }
     }
 }
