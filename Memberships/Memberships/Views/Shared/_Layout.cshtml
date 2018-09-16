@@ -18,7 +18,11 @@
                     <span class="icon-bar navbar-inverse"></span>
                     <span class="icon-bar navbar-inverse"></span>
                 </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                <a class="navbar-brand" href="/Home/Index/">
+                    <img src="~/Content/Logos/membership-icon-large.png" class="hidden-xs" />
+                    <img src="~/Content/Logos/membership-icon-small.png" class="visible-xs" />
+                </a>
+                @*@Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })*@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
