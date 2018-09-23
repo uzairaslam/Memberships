@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Memberships.Models;
 
 namespace Memberships.Controllers
 {
@@ -10,7 +11,13 @@ namespace Memberships.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            var model = new List<ThumbnailAreaModel>();
+            model.Add(new ThumbnailAreaModel
+            {
+                Title = "Area Title",
+                Thumbnails = new List<ThumbnailModel>()
+            });
+            return View(model);
         }
 
         public ActionResult About()
