@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Memberships.Extensions;
 using Memberships.Models;
+using Microsoft.AspNet.Identity;
 
 namespace Memberships.Controllers
 {
@@ -11,6 +13,7 @@ namespace Memberships.Controllers
     {
         public ActionResult Index()
         {
+            var userId = Request.IsAuthenticated ? HttpContext.User.Identity.GetUserId() : null; 
             var model = new List<ThumbnailAreaModel>();
             model.Add(new ThumbnailAreaModel
             {
